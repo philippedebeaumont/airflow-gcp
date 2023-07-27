@@ -7,7 +7,8 @@ def call_api_and_upload_to_gcs():
     # Your API call to get data
     response = requests.get('https://opensky-network.org/api/states/all')
     data = response.json()['states']
-    date_now = datetime.now()
+    now = datetime.now()
+    formatted_date = now.strftime("%Y-%m-%d %H:%M")
 
     schema = {
     'icao24': str,
@@ -35,7 +36,7 @@ def call_api_and_upload_to_gcs():
     # Upload data to Google Cloud Storage
     gcs_client = storage.Client()
     bucket_name = 'opensky-api-data'
-    blob_name = f'hourly-extraction/{date_now}-opensky_data.csv'
+    blob_name = f'hourly-extraction/{formatted_date}-opensky_data.csv'
     bucket = gcs_client.get_bucket(bucket_name)
     blob = bucket.blob(blob_name)
     blob.upload_from_string(csv_content)
