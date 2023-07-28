@@ -57,9 +57,8 @@ x-airflow-common:
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKEND: 'airflow.api.auth.backend.basic_auth'
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
-    BUCKET_ID: '${BUCKET_ID}'
-    DATASET_ID: '${DATASET_ID}'
-    TABLE_ID: '$(TABLE_ID)'
+  env_file:
+    - .env
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
