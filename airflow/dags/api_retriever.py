@@ -70,7 +70,7 @@ def load_csv_to_bigquery():
 
     # Load data into BigQuery
     bigquery_client.load_table_from_uri(
-        source_uris=blob,
+        source_uris=[blob.public_url],
         destination=table_ref,
         job_config=job_config
     )
