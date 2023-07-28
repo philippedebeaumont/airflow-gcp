@@ -79,6 +79,7 @@ gcs_to_bq_task = GoogleCloudStorageToBigQueryOperator(
     destination_project_dataset_table='opensky-api-394212.test_api.test_table',
     write_disposition='WRITE_APPEND',
     dag=dag,
+    gcp_conn_id='my_custom_gcp_connection'
 )
 
 call_api_task >> gcs_to_bq_task
