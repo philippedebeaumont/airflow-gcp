@@ -1,31 +1,15 @@
-sudo apt-get install pip
+sudo apt update
+sudo apt install apt-transport-https ca-certificates curl software-properties-common gnupg lsb-release
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt update
+sudo apt install docker-ce
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
 sudo apt-get install git
-sudo apt-get install python3-venv
-sudo apt-get install -y supervisor
 git clone https://github.com/philippedebeaumont/airflow-gcp.git
 cd airflow-gcp
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-airflow db init
-cd ..
-mkdir airflow/dags
-cp airflow-gcp/api_call_to_gcs.py airflow/dags/
-sudo mkdir -p /var/log/airflow
-export USERNAME=$(whoami)
-sudo cp airflow-gcp/airflow.conf /etc/supervisor/conf.d/
-sudo nano airflow/.env
-
-airflow users create \
-  --username airflow1 \
-  --firstname YourFirstName \
-  --lastname YourLastName \
-  --email your_email@example.com \
-  --role Admin \
-  --password airflow1
-
-
-sudo supervisorctl reread
-sudo supervisorctl update
-sudo supervisorctl start airflow-webserver
-sudo supervisorctl start airflow-scheduler
+sudo docker-compose up airflow-init
