@@ -5,8 +5,7 @@ from airflow.operators.python_operator import PythonOperator
 from airflow.contrib.operators.gcs_to_bq import GoogleCloudStorageToBigQueryOperator
 import requests
 import pandas as pd
-from google.cloud import storage
-from google.cloud import bigquery
+from google.cloud import storage, bigquery
 
 def call_api_and_upload_to_gcs():
     # Your API call to get data
