@@ -2,17 +2,15 @@ from datetime import timedelta
 from datetime import datetime
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from airflow.contrib.operators.gcs_to_bq import GoogleCloudStorageToBigQueryOperator
 import requests
 import pandas as pd
+import os
 from google.cloud import storage, bigquery
 
-def call_api_and_upload_to_gcs():
+def call_api_and_upload_to_gcs(formatted_date, bucket):
     # Your API call to get data
     response = requests.get('https://opensky-network.org/api/states/all')
     data = response.json()['states']
-    now = datetime.now()
-    formatted_date = now.strftime("%Y-%m-%d %H:00")
 
     schema = {
     'icao24': str,
@@ -39,28 +37,24 @@ def call_api_and_upload_to_gcs():
 
     # Upload data to Google Cloud Storage
     gcs_client = storage.Client()
-    bucket_name = 'opensky-api-extraction'
-    #blob_name = f'hourly-extraction/{formatted_date}-opensky_data.csv'
-    blob_name = 'hourly-extraction/test.csv'
+    bucket_name = bucket
+    blob_name = f'hourly-extraction/{formatted_date}-opensky_data.csv'
     bucket = gcs_client.get_bucket(bucket_name)
     blob = bucket.blob(blob_name)
     blob.upload_from_string(csv_content)
 
-def load_csv_to_bigquery():
-    bucket_name="opensky-api-extraction"
-    dataset_id="test_api"
-    table_id="test_table"
+def load_csv_to_bigquery(formatted_date, bucket, dataset, table):
     # Initialize the Google Cloud Storage and BigQuery clients
     storage_client = storage.Client()
     bigquery_client = bigquery.Client()
 
     # Get the GCS bucket and blob
-    bucket = storage_client.bucket(bucket_name)
+    bucket = storage_client.bucket(bucket)
     blob = bucket.blob("hourly-extraction/test.csv")
 
     # Define the BigQuery dataset and table
-    dataset_ref = bigquery_client.dataset(dataset_id)
-    table_ref = dataset_ref.table(table_id)
+    dataset_ref = bigquery_client.dataset(dataset)
+    table_ref = dataset_ref.table(table)
 
     # Configure the job to load data from GCS to BigQuery
     job_config = bigquery.LoadJobConfig()
@@ -77,6 +71,9 @@ def load_csv_to_bigquery():
 
 now = datetime.now()
 formatted_date = now.strftime("%Y-%m-%d %H:00")
+bucket = os.environ.get('BUCKET')
+dataset = os.environ.get('DATASET')
+table = os.environ.get('TABLE')
 
 default_args = {
     'owner': 'airflow',
@@ -99,24 +96,14 @@ dag = DAG(
 call_api_task = PythonOperator(
     task_id='call_api_and_upload_to_gcs',
     python_callable=call_api_and_upload_to_gcs,
+    op_args=[formatted_date, bucket],
     dag=dag,
 )
-
-"""
-gcs_to_bq_task = GoogleCloudStorageToBigQueryOperator(
-    task_id='gcs_to_bq',
-    bucket='opensky-api-data',
-    source_objects=[f'hourly-extraction/{formatted_date}-opensky_data.csv'],
-    destination_project_dataset_table='opensky-api-394212.test_api.test_table',
-    write_disposition='WRITE_APPEND',
-    dag=dag,
-    gcp_conn_id='my_custom_gcp_connection'
-)
-"""
 
 gcs_to_bq_task = PythonOperator(
     task_id='gcs_to_bq_task',
     python_callable=load_csv_to_bigquery,
+    op_args=[formatted_date, bucket, dataset, table],
     dag=dag,
 )
 
