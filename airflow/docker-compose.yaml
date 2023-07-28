@@ -57,9 +57,6 @@ x-airflow-common:
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKEND: 'airflow.api.auth.backend.basic_auth'
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
-    BUCKET: '${BUCKET}'
-    DATASET: '${DATASET}'
-    TABLE: '$(TABLE)'
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
@@ -100,6 +97,10 @@ services:
 
   airflow-webserver:
     <<: *airflow-common
+    environment:
+      BUCKET: '${BUCKET}'
+      DATASET: '${DATASET}'
+      TABLE: '$(TABLE)'
     command: webserver
     ports:
       - 8080:8080
