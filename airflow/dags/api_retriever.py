@@ -3,7 +3,6 @@ from datetime import datetime
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from airflow.contrib.operators.gcs_to_bq import GoogleCloudStorageToBigQueryOperator
-from airflow.dags.api_call_to_gcs import call_api_and_upload_to_gcs
 import requests
 import pandas as pd
 from google.cloud import storage
