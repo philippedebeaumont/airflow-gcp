@@ -3,7 +3,7 @@ from datetime import datetime
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from airflow.contrib.operators.gcs_to_bq import GoogleCloudStorageToBigQueryOperator
-from api_call_to_gcs import call_api_and_upload_to_gcs
+from airflow.dags.api_call_to_gcs import call_api_and_upload_to_gcs
 import requests
 import pandas as pd
 from google.cloud import storage
@@ -40,7 +40,7 @@ def call_api_and_upload_to_gcs():
 
     # Upload data to Google Cloud Storage
     gcs_client = storage.Client()
-    bucket_name = 'opensky-api-data'
+    bucket_name = 'opensky-api-extraction'
     blob_name = f'hourly-extraction/{formatted_date}-opensky_data.csv'
     bucket = gcs_client.get_bucket(bucket_name)
     blob = bucket.blob(blob_name)
@@ -76,7 +76,7 @@ gcs_to_bq_task = GoogleCloudStorageToBigQueryOperator(
     task_id='gcs_to_bq',
     bucket='opensky-api-data',
     source_objects=[f'hourly-extraction/{formatted_date}-opensky_data.csv'],
-    destination_project_dataset_table='opensky-api.test_api.test_table',
+    destination_project_dataset_table='opensky-api-394212.test_api.test_table',
     write_disposition='WRITE_APPEND',
     dag=dag,
 )
