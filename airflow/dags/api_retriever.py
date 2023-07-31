@@ -73,7 +73,7 @@ now = datetime.now()
 formatted_date = now.strftime("%Y-%m-%d %H:00")
 bucket = os.environ.get('BUCKET_ID')
 dataset = os.environ.get('DATASET_ID')
-table = 'opensky-hourly-extraction'
+table = os.environ.get('TABLE_ID')
 
 default_args = {
     'owner': 'airflow',
