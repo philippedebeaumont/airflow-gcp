@@ -14,5 +14,5 @@ cd airflow-gcp/airflow
 echo "" | sudo tee -a .env
 echo "BUCKET_ID=$BUCKET_ID" | sudo tee -a .env
 echo "DATASET_ID=$DATASET_ID" | sudo tee -a .env
-echo "DATASET_ID=$TABLE_ID" | sudo tee -a .env
+echo "TABLE_ID=$TABLE_ID" | sudo tee -a .env
 sudo docker-compose up -d
