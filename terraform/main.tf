@@ -54,27 +54,25 @@ resource "google_bigquery_table" "opensky-api-hourly-extraction" {
     env = "default"
   }
 
-  schema = jsonencode({
-    fields = [
-      { name = "icao24", type = "STRING" },
-      { name = "callsign", type = "STRING" },
-      { name = "origin_country", type = "STRING" },
-      { name = "time_position", type = "INT64" },
-      { name = "last_contact", type = "INT64" },
-      { name = "longitude", type = "FLOAT64" },
-      { name = "latitude", type = "FLOAT64" },
-      { name = "geo_altitude", type = "FLOAT64" },
-      { name = "on_ground", type = "BOOL" },
-      { name = "velocity", type = "FLOAT64" },
-      { name = "true_track", type = "FLOAT64" },
-      { name = "vertical_rate", type = "FLOAT64" },
-      { name = "sensors", type = "STRING" },
-      { name = "baro_altitude", type = "FLOAT64" },
-      { name = "squawk", type = "STRING" },
-      { name = "spi", type = "BOOL" },
-      { name = "category", type = "INT64" },
-    ]
-  })
+  schema = jsonencode([
+      { name = "icao24", type = "STRING", mode="NULLABLE" },
+      { name = "callsign", type = "STRING", mode="NULLABLE" },
+      { name = "origin_country", type = "STRING", mode="NULLABLE" },
+      { name = "time_position", type = "INT64", mode="NULLABLE" },
+      { name = "last_contact", type = "INT64", mode="NULLABLE" },
+      { name = "longitude", type = "FLOAT64", mode="NULLABLE" },
+      { name = "latitude", type = "FLOAT64", mode="NULLABLE" },
+      { name = "geo_altitude", type = "FLOAT64", mode="NULLABLE" },
+      { name = "on_ground", type = "BOOL", mode="NULLABLE" },
+      { name = "velocity", type = "FLOAT64", mode="NULLABLE" },
+      { name = "true_track", type = "FLOAT64", mode="NULLABLE" },
+      { name = "vertical_rate", type = "FLOAT64", mode="NULLABLE" },
+      { name = "sensors", type = "STRING", mode="NULLABLE" },
+      { name = "baro_altitude", type = "FLOAT64", mode="NULLABLE" },
+      { name = "squawk", type = "STRING", mode="NULLABLE" },
+      { name = "spi", type = "BOOL", mode="NULLABLE" },
+      { name = "category", type = "INT64", mode="NULLABLE" },
+    ])
 
   depends_on = [google_bigquery_dataset.dataset]
 }
