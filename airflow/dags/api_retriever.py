@@ -54,6 +54,8 @@ def load_csv_to_bigquery(formatted_date, bucket, dataset, table):
     print(blob)
     content = blob.download_as_text()
     print(content)
+    print('HAHAHA')
+    print(blob.public_url)
 
     # Define the BigQuery dataset and table
     dataset_ref = bigquery_client.dataset(dataset)
