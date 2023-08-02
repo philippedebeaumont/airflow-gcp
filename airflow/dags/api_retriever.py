@@ -38,7 +38,8 @@ def call_api_and_upload_to_gcs(formatted_date, bucket):
     # Upload data to Google Cloud Storage
     gcs_client = storage.Client()
     bucket_name = bucket
-    blob_name = f'hourly-extraction/{formatted_date}-opensky_data.csv'
+    ##blob_name = f'hourly-extraction/{formatted_date}-opensky_data.csv'
+    blob_name = "hourly-extraction/test.csv"
     bucket = gcs_client.get_bucket(bucket_name)
     blob = bucket.blob(blob_name)
     blob.upload_from_string(csv_content)
@@ -49,11 +50,18 @@ def load_csv_to_bigquery(formatted_date, bucket, dataset, table):
     bigquery_client = bigquery.Client()
 
     # Get the GCS bucket and blob
+    # # bucket = storage_client.bucket(bucket)
+    # # blob = bucket.blob(f'hourly-extraction/{formatted_date}-opensky_data.csv')
+    # # content = blob.download_as_bytes()
+    # # df = pd.read_csv(pd.BytesIO(content))
+    # # df = df.drop(labels=0)
+
+    storage_client = storage.Client()
+    bigquery_client = bigquery.Client()
+
+    # Get the GCS bucket and blob
     bucket = storage_client.bucket(bucket)
-    blob = bucket.blob(f'hourly-extraction/{formatted_date}-opensky_data.csv')
-    content = blob.download_as_bytes()
-    df = pd.read_csv(pd.BytesIO(content))
-    df = df.drop(labels=0)
+    blob = bucket.blob("hourly-extraction/test.csv")
 
     # Define the BigQuery dataset and table
     dataset_ref = bigquery_client.dataset(dataset)
@@ -66,7 +74,13 @@ def load_csv_to_bigquery(formatted_date, bucket, dataset, table):
     job_config.autodetect = True  # Automatically detect schema from CSV
 
     # Load data into BigQuery
-    bigquery_client.insert_rows(table_ref, df)
+    ###bigquery_client.insert_rows(table_ref, df)
+
+    bigquery_client.load_table_from_uri(
+        source=blob,
+        destination=table_ref,
+        job_config=job_config
+    )
 
 now = datetime.now()
 formatted_date = now.strftime("%Y-%m-%d %H:00")
