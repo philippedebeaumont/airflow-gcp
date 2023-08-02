@@ -38,8 +38,8 @@ def call_api_and_upload_to_gcs(formatted_date, bucket):
     # Upload data to Google Cloud Storage
     gcs_client = storage.Client()
     bucket_name = bucket
-    ##blob_name = f'hourly-extraction/{formatted_date}-opensky_data.csv'
-    blob_name = "hourly-extraction/test.csv"
+    blob_name = f'hourly-extraction/{formatted_date}-opensky_data.csv'
+    ##blob_name = "hourly-extraction/test.csv"
     bucket = gcs_client.get_bucket(bucket_name)
     blob = bucket.blob(blob_name)
     blob.upload_from_string(csv_content)
@@ -61,7 +61,8 @@ def load_csv_to_bigquery(formatted_date, bucket, dataset, table):
 
     # Get the GCS bucket and blob
     bucket = storage_client.bucket(bucket)
-    blob = bucket.blob("hourly-extraction/test.csv")
+    ## blob = bucket.blob("hourly-extraction/test.csv")
+    blob = bucket.blob("f'hourly-extraction/{formatted_date}-opensky_data.csv'")
 
     # Define the BigQuery dataset and table
     dataset_ref = bigquery_client.dataset(dataset)
