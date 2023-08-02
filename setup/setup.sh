@@ -28,5 +28,6 @@ echo "TABLE_ID=$TABLE_ID" | sudo tee -a .env
 # Docker deployment
 sudo docker-compose up -d
 
-# Enable the dag
+# Wait for the webserver to start and enable the dag
+sleep 2m
 sudo docker exec airflow-airflow-webserver-1 airflow dags unpause data_pipeline
