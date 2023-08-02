@@ -54,7 +54,8 @@ def load_csv_to_bigquery(formatted_date, bucket, dataset, table):
 
     # Get the GCS bucket and blob
     bucket = storage_client.bucket(bucket)
-    blob = bucket.blob(f'hourly-extraction/{formatted_date}-opensky_data.csv')
+    blob = bucket.blob(f'hourly-extraction/{formatted_date}-opensky_data.csv') 
+    # Care because some characters will fail like " " or ":", bigquery client loading method will fail the url retrieve with these
 
     # Define the BigQuery dataset and table
     dataset_ref = bigquery_client.dataset(dataset)
