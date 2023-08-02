@@ -51,11 +51,9 @@ def load_csv_to_bigquery(formatted_date, bucket, dataset, table):
     # Get the GCS bucket and blob
     bucket = storage_client.bucket(bucket)
     blob = bucket.blob(f'hourly-extraction/{formatted_date}-opensky_data.csv')
-    print(blob)
-    content = blob.download_as_text()
-    print(content)
-    print('HAHAHA')
-    print(blob.public_url)
+    content = blob.download_as_bytes()
+    df = pd.read_csv(pd.BytesIO(content))
+    df = df.drop(labels=0)
 
     # Define the BigQuery dataset and table
     dataset_ref = bigquery_client.dataset(dataset)
@@ -68,11 +66,7 @@ def load_csv_to_bigquery(formatted_date, bucket, dataset, table):
     job_config.autodetect = True  # Automatically detect schema from CSV
 
     # Load data into BigQuery
-    bigquery_client.load_table_from_uri(
-        source_uris=[blob.public_url],
-        destination=table_ref,
-        job_config=job_config
-    )
+    bigquery_client.insert_rows(table_ref, df)
 
 now = datetime.now()
 formatted_date = now.strftime("%Y-%m-%d %H:00")
