@@ -54,6 +54,28 @@ resource "google_bigquery_table" "opensky-api-hourly-extraction" {
     env = "default"
   }
 
+  schema = jsonencode({
+    fields = [
+      { name = "icao24", type = "STRING" },
+      { name = "callsign", type = "STRING" },
+      { name = "origin_country", type = "STRING" },
+      { name = "time_position", type = "INT64" },
+      { name = "last_contact", type = "INT64" },
+      { name = "longitude", type = "FLOAT64" },
+      { name = "latitude", type = "FLOAT64" },
+      { name = "geo_altitude", type = "FLOAT64" },
+      { name = "on_ground", type = "BOOL" },
+      { name = "velocity", type = "FLOAT64" },
+      { name = "true_track", type = "FLOAT64" },
+      { name = "vertical_rate", type = "FLOAT64" },
+      { name = "sensors", type = "STRING" },
+      { name = "baro_altitude", type = "FLOAT64" },
+      { name = "squawk", type = "STRING" },
+      { name = "spi", type = "BOOL" },
+      { name = "category", type = "INT64" },
+    ]
+  })
+
   depends_on = [google_bigquery_dataset.dataset]
 }
 
