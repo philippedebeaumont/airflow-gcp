@@ -48,7 +48,7 @@ resource "google_bigquery_dataset" "dataset" {
 resource "google_bigquery_table" "opensky-api-hourly-extraction" {
   dataset_id                  = google_bigquery_dataset.dataset.dataset_id
   table_id                    = var.table
-  deletion_protection         = false
+  deletion_protection         = false # True by default to protect data but here we want to easily destroy the project
 
   labels = {
     env = "default"
@@ -77,6 +77,7 @@ resource "google_bigquery_table" "opensky-api-hourly-extraction" {
   depends_on = [google_bigquery_dataset.dataset]
 }
 
+# Enable connection to the airflow web UI on the vm
 resource "google_compute_firewall" "port_rules" {
   project     = var.project
   name        = "airflow-port"
@@ -98,6 +99,7 @@ resource "google_compute_instance" "airflow_vm_instance" {
   tags                      = ["airflow"]
   allow_stopping_for_update = true
 
+  # Airflow must have more than 10Gb of RAM and 10 Go of persistent disk
   boot_disk {
     initialize_params {
       image = var.vm_image
@@ -111,6 +113,7 @@ resource "google_compute_instance" "airflow_vm_instance" {
     }
   }
 
+  # Must give a scope for you VM to access gcp services
   service_account {
     email  = local.service_account_email
     scopes = [
@@ -127,7 +130,7 @@ resource "google_compute_instance" "airflow_vm_instance" {
     TABLE_ID = var.table
   }
 
-  metadata_startup_script = file(var.airflow_setup)
+  metadata_startup_script = file(var.airflow_setup) # Startup script must not be greater than 256 kB
 
   depends_on = [google_storage_bucket.bucket, google_compute_firewall.port_rules]
 }
