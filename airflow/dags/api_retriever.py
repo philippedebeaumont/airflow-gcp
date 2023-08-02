@@ -77,7 +77,7 @@ def load_csv_to_bigquery(formatted_date, bucket, dataset, table):
     ###bigquery_client.insert_rows(table_ref, df)
 
     bigquery_client.load_table_from_uri(
-        source_uris=blob,
+        source_uris=[blob.public_url],
         destination=table_ref,
         job_config=job_config
     )
