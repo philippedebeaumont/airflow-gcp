@@ -75,7 +75,7 @@ def load_csv_to_bigquery(formatted_date, bucket, dataset, table):
     )
 
 now = datetime.now()
-formatted_date = now.strftime("%Y-%m-%d %H:00")
+formatted_date = now.strftime("%Y%m%d%H00")
 bucket = os.environ.get('BUCKET_ID')
 dataset = os.environ.get('DATASET_ID')
 table = os.environ.get('TABLE_ID')
